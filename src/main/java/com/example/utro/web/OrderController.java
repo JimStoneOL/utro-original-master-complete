@@ -3,6 +3,7 @@ package com.example.utro.web;
 import com.example.utro.dto.OrderDTO;
 import com.example.utro.entity.Order;
 import com.example.utro.entity.enums.EStage;
+import com.example.utro.exceptions.OrderedProductNotFoundException;
 import com.example.utro.facade.OrderFacade;
 import com.example.utro.payload.request.CustomerOrderRequest;
 import com.example.utro.payload.request.UpdateStageOrderRequest;
@@ -78,7 +79,13 @@ public class OrderController {
     @PostMapping("/update/{article}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> updateOrder(@PathVariable("article") UUID article,Principal principal){
-        OrderResponseUpdate response=orderService.updateOrder(article,principal);
+        OrderResponseUpdate response;
+        try{
+            response=orderService.updateOrder(article,principal);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
+        }
         if(response.getHttpStatus().equals(HttpStatus.BAD_REQUEST)){
             return new ResponseEntity<>(response.getMessage(),response.getHttpStatus());
         }else{
@@ -89,7 +96,19 @@ public class OrderController {
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> deleteOrder(@PathVariable("orderId") UUID orderId,Principal principal){
         OrderResponseDelete response =orderService.deleteOrder(orderId,principal);
-        return new ResponseEntity<>(response.getMessage(),response.getHttpStatus());
+        return new ResponseEntity<>(new MessageResponse(response.getMessage()),response.getHttpStatus());
+    }
+    @PostMapping("/delete/forever/{orderId}")
+    @PreAuthorize("hasRole('DIRECTOR')")
+    public ResponseEntity<Object> deleteOrderForever(@PathVariable("orderId") UUID orderId){
+        OrderResponseDelete response =orderService.deleteOrderForever(orderId);
+        return new ResponseEntity<>(new MessageResponse(response.getMessage()),response.getHttpStatus());
+    }
+    @PostMapping("/delete/aftermath/{orderId}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<Object> deleteOrderWithoutOrderedProduct(@PathVariable("orderId") UUID orderId,Principal principal){
+        OrderResponseDelete response =orderService.deleteOrderWithoutOrderedProduct(orderId,principal);
+        return new ResponseEntity<>(new MessageResponse(response.getMessage()),response.getHttpStatus());
     }
     @PostMapping("/add/manager/{orderId}")
     @PreAuthorize("hasRole('MANAGER')")
@@ -108,6 +127,13 @@ public class OrderController {
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
         Order order=orderService.updateStageOrder(request,principal);
+        OrderDTO orderDTO=orderFacade.orderToOrderDTO(order);
+        return new ResponseEntity<>(orderDTO,HttpStatus.OK);
+    }
+    @PostMapping("/confirm/{orderId}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<Object> confirmOrder(@PathVariable("orderId") UUID orderId, Principal principal){
+        Order order=orderService.confirmOrder(orderId,principal);
         OrderDTO orderDTO=orderFacade.orderToOrderDTO(order);
         return new ResponseEntity<>(orderDTO,HttpStatus.OK);
     }

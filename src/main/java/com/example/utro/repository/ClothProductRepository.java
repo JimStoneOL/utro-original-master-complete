@@ -18,6 +18,7 @@ public interface ClothProductRepository extends JpaRepository<ClothProduct,Long>
 
     Optional<ClothProduct> findByCloth(Cloth cloth);
 
+    Optional<List<ClothProduct>> findAllByCloth(Cloth cloth);
 
     Optional<List<ClothProduct>> findAllByProduct(Product product);
 

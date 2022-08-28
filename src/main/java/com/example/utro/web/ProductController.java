@@ -89,7 +89,7 @@ public class ProductController {
         }catch (Exception e){
             return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(productResponseDelete.getMessage(),productResponseDelete.getHttpStatus());
+        return new ResponseEntity<>(new MessageResponse(productResponseDelete.getMessage()),productResponseDelete.getHttpStatus());
     }
     @PostMapping("/update")
     @PreAuthorize("hasRole('CUSTOMER')")
@@ -103,7 +103,7 @@ public class ProductController {
             return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
         }
         if(productResponseUpdate.getHttpStatus().equals(HttpStatus.BAD_REQUEST)){
-            return new ResponseEntity<>(productResponseUpdate.getMessage(),productResponseUpdate.getHttpStatus());
+            return new ResponseEntity<>(new MessageResponse(productResponseUpdate.getMessage()),productResponseUpdate.getHttpStatus());
         }else{
             return new ResponseEntity<>(productResponseUpdate.getBody(),productResponseUpdate.getHttpStatus());
         }
@@ -151,6 +151,12 @@ public class ProductController {
         List<Product> products=productService.getAllProducts();
         return new ResponseEntity<>(productFacade.productListToProductDTOList(products),HttpStatus.OK);
     }
+    @GetMapping("/orderCheck/{productId}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<Object> orderCheck(@PathVariable("productId") UUID productId,Principal principal){
+        MessageResponse messageResponse=productService.checkInOrder(productId,principal);
+        return new ResponseEntity<>(messageResponse,HttpStatus.OK);
+    }
     @PostMapping("/template/delete/{article}")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> deleteTemplateProduct(@PathVariable("article") UUID article){
@@ -160,7 +166,7 @@ public class ProductController {
         }catch (Exception e){
             return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(productResponseDelete.getMessage(),productResponseDelete.getHttpStatus());
+        return new ResponseEntity<>(new MessageResponse(productResponseDelete.getMessage()),productResponseDelete.getHttpStatus());
     }
     @PostMapping("/template/update")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")

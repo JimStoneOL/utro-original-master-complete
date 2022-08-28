@@ -11,6 +11,6 @@ import java.util.UUID;
 public class UpdateStageOrderRequest {
     @NotNull
     private UUID orderId;
-    @NotEmpty
+    @NotNull
     private EStage stage;
 }

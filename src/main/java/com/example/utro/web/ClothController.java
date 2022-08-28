@@ -6,6 +6,7 @@ import com.example.utro.facade.ClothFacade;
 import com.example.utro.payload.response.MessageResponse;
 import com.example.utro.service.ClothService;
 import com.example.utro.validations.ResponseErrorValidation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,5 +56,12 @@ public class ClothController {
         }
         ClothDTO clothDTO=clothFacade.clothToClothDTO(cloth);
         return new ResponseEntity<>(clothDTO,HttpStatus.OK);
+    }
+
+    @PostMapping("/delete/{clothId}")
+    @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
+    public ResponseEntity<Object> deleteClothById(@PathVariable("clothId") UUID clothId){
+        MessageResponse messageResponse=clothService.deleteCloth(clothId);
+        return new ResponseEntity<>(messageResponse,HttpStatus.OK);
     }
 }

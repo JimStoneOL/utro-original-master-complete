@@ -189,6 +189,30 @@ public class FurnitureProductController {
         List<FurnitureProductDTO> furnitureProductDTOList=furnitureProductFacade.furnitureProductListToFurnitureProductDTOList(furnitureProductList);
         return new ResponseEntity<>(furnitureProductDTOList,HttpStatus.OK);
     }
+    @PostMapping("/template/delete/product/{productId}")
+    @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
+    public ResponseEntity<Object> deleteAllFurnitureProductByTemplateProductId(@PathVariable("productId") UUID productId){
+        FurnitureProductResponseDelete furnitureProductResponseDelete;
+        try{
+            furnitureProductResponseDelete=furnitureProductService.deleteAllFurnitureProductByTemplateProductId(productId);
+        }catch (Exception e){
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(new MessageResponse(furnitureProductResponseDelete.getMessage()),furnitureProductResponseDelete.getHttpStatus());
+    }
+
+    @PostMapping("/delete/product/{productId}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<Object> deleteAllFurnitureProductByProductId(@PathVariable("productId") UUID productId,Principal principal){
+        FurnitureProductResponseDelete furnitureProductResponseDelete;
+        try{
+            furnitureProductResponseDelete=furnitureProductService.deleteAllFurnitureProductByProductId(productId,principal);
+        }catch (Exception e){
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(new MessageResponse(furnitureProductResponseDelete.getMessage()),furnitureProductResponseDelete.getHttpStatus());
+    }
+
     @GetMapping("/get/any/all")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> getAnyAllFurnitureProduct(){
@@ -208,4 +232,5 @@ public class FurnitureProductController {
         FurnitureProductDTO furnitureProductDTO=furnitureProductFacade.furnitureProductToFurnitureProductDTO(furnitureProduct);
         return new ResponseEntity<>(furnitureProductDTO,HttpStatus.OK);
     }
+
 }

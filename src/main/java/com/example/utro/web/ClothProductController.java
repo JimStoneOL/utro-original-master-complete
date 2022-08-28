@@ -182,6 +182,28 @@ public class ClothProductController {
         }
         return new ResponseEntity<>(clothProductResponseDelete.getMessage(),clothProductResponseDelete.getHttpStatus());
     }
+    @PostMapping("/template/delete/product/{productId}")
+    @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
+    public ResponseEntity<Object> deleteAllClothProductByTemplateProductId(@PathVariable("productId") UUID productId){
+        ClothProductResponseDelete clothProductResponseDelete;
+        try{
+            clothProductResponseDelete=clothProductService.deleteAllClothProductByTemplateProductId(productId);
+        }catch (Exception e){
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(new MessageResponse(clothProductResponseDelete.getMessage()),clothProductResponseDelete.getHttpStatus());
+    }
+    @PostMapping("/delete/product/{productId}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<Object> deleteAllClothProductByProductId(@PathVariable("productId") UUID productId,Principal principal){
+        ClothProductResponseDelete clothProductResponseDelete;
+        try{
+            clothProductResponseDelete=clothProductService.deleteAllClothProductByProductId(productId,principal);
+        }catch (Exception e){
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(new MessageResponse(clothProductResponseDelete.getMessage()),clothProductResponseDelete.getHttpStatus());
+    }
     @GetMapping("/get/any/product/{id}")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> getAnyClothProductByProductId(@PathVariable("id") UUID id){

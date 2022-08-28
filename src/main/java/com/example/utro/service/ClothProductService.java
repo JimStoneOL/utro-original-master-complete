@@ -8,6 +8,7 @@ import com.example.utro.exceptions.ProductNotFoundException;
 import com.example.utro.facade.ClothProductFacade;
 import com.example.utro.payload.response.ClothProductResponseDelete;
 import com.example.utro.payload.response.ClothProductResponseUpdate;
+import com.example.utro.payload.response.FurnitureProductResponseDelete;
 import com.example.utro.repository.ClothProductRepository;
 import com.example.utro.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,6 +136,45 @@ public class ClothProductService {
         }
         return clothProductList;
     }
+    public ClothProductResponseDelete deleteAllClothProductByTemplateProductId(UUID productId){
+        Product product=productRepository.findById(productId).orElseThrow(()->new ProductNotFoundException("Продукт не найден"));
+        if(product.getUser()!=null){
+            ClothProductResponseDelete response=new ClothProductResponseDelete();
+            response.setHttpStatus(HttpStatus.BAD_REQUEST);
+            response.setMessage("Ошибка! Данный продукт не является шаблонным");
+            return response;
+        }else{
+            List<ClothProduct> clothProductList=clothProductRepository.findAllByProduct(product).orElseThrow(()->new ClothProductNotFoundException("Ткани продукта не найдена"));
+            for (int i=0;i<clothProductList.size();i++){
+                clothProductRepository.deleteById(clothProductList.get(i).getId());
+            }
+            ClothProductResponseDelete response=new ClothProductResponseDelete();
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Ткани продукта успешно удалены");
+            return response;
+        }
+    }
+    public ClothProductResponseDelete deleteAllClothProductByProductId(UUID productId,Principal principal){
+        User user=principalService.getUserByPrincipal(principal);
+        Product product=productRepository.findByArticleAndUser(productId,user).orElseThrow(()->new ProductNotFoundException("Продукт не найден"));
+        if(user.getOrders()!=null) {
+            boolean isFound = findProductInOrder(product, user.getOrders());
+            if (isFound) {
+                ClothProductResponseDelete response=new ClothProductResponseDelete();
+                response.setHttpStatus(HttpStatus.BAD_REQUEST);
+                response.setMessage("Ошибка! Данный продукт находиться в списке заказов");
+                return response;
+            }
+        }
+            List<ClothProduct> clothProductList=clothProductRepository.findAllByProductAndUser(product,user).orElseThrow(()->new ClothProductNotFoundException("Ткани продукта не найдена"));
+            for (int i=0;i<clothProductList.size();i++){
+                clothProductRepository.deleteById(clothProductList.get(i).getId());
+            }
+            ClothProductResponseDelete response=new ClothProductResponseDelete();
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Ткани продукта успешно удалены");
+            return response;
+    }
     public List<ClothProduct> getClothProductListByProductId(UUID id,Principal principal) {
         User user=principalService.getUserByPrincipal(principal);
         Product product=productRepository.findById(id).orElseThrow(()->new ProductNotFoundException("Продукт не найден"));
@@ -194,13 +234,16 @@ public class ClothProductService {
         }
     }
     private boolean findProductInOrder(Product product, List<Order> orders){
+
         for(int i=0;i<orders.size();i++){
             Order order=orders.get(i);
             List<OrderedProduct> orderedProducts=order.getOrderedProducts();
-            for(int k=0;k<orderedProducts.size();k++){
-                OrderedProduct orderedProduct=orderedProducts.get(i);
-                if(orderedProduct.getProduct().getArticle().equals(product.getArticle())){
-                    return true;
+            if(orderedProducts!=null) {
+                for (int k = 0; k < orderedProducts.size(); k++) {
+                    OrderedProduct orderedProduct = orderedProducts.get(k);
+                    if (orderedProduct.getProduct().getArticle()==product.getArticle()) {
+                        return true;
+                    }
                 }
             }
         }

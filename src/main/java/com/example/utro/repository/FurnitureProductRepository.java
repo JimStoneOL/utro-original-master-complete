@@ -21,4 +21,6 @@ public interface FurnitureProductRepository extends JpaRepository<FurnitureProdu
     Optional<List<FurnitureProduct>> findAllByProduct(Product product);
 
     Optional<List<FurnitureProduct>> findAllByProductAndUser(Product product, User user);
+
+    Optional<List<FurnitureProduct>> findAllByFurniture(Furniture furniture);
 }

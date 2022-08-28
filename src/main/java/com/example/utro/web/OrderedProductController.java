@@ -10,6 +10,7 @@ import com.example.utro.payload.response.OrderedProductResponseDelete;
 import com.example.utro.payload.response.OrderedProductResponseUpdate;
 import com.example.utro.service.OrderedProductService;
 import com.example.utro.validations.ResponseErrorValidation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api/order/product")
 @CrossOrigin
+@Slf4j
 public class OrderedProductController {
     @Autowired
     private OrderedProductService orderedProductService;
@@ -39,7 +41,12 @@ public class OrderedProductController {
     public ResponseEntity<Object> createOrderedProduct(@Valid @RequestBody OrderedProductDTO orderedProductDTO, BindingResult bindingResult, Principal principal){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        OrderedProduct orderedProduct=orderedProductService.createOrderedProduct(orderedProductDTO,principal);
+        OrderedProduct orderedProduct;
+        try{
+            orderedProduct=orderedProductService.createOrderedProduct(orderedProductDTO,principal);
+        }catch (Exception e){
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
+        }
         OrderedProductDTO orderedProductResponse=orderedProductFacade.orderedProductToOrderedProductDTO(orderedProduct);
         return new ResponseEntity<>(orderedProductResponse, HttpStatus.CREATED);
     }

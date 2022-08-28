@@ -120,12 +120,22 @@ public class OrderService {
         order.setStage(request.getStage());
         return orderRepository.save(order);
     }
+    public Order confirmOrder(UUID orderId, Principal principal){
+        Order order=getOrderById(orderId,principal);
+        if(order.getStage().equals(EStage.STAGE_NEW)) {
+            order.setStage(EStage.STAGE_CONFIRMED);
+        }
+        return orderRepository.save(order);
+    }
     //customer
     public OrderResponseUpdate updateOrder(UUID article,Principal principal){
         User user=principalService.getUserByPrincipal(principal);
-        Order order=orderRepository.findByIdAndUser(article,user).orElseThrow(()->new OrderNotFoundException("Order not found"));
+        Order order=orderRepository.findByIdAndUser(article,user).orElseThrow(()->new OrderNotFoundException("Заказ не найден"));
         if(order.getStage().equals(EStage.STAGE_NEW)){
             List<OrderedProduct> orderedProducts=orderedProductRepository.findAllByOrder(order).orElseThrow(()->new OrderedProductNotFoundException("Заказ продукта не найден"));
+            if(orderedProducts.size()==0){
+                throw new OrderedProductNotFoundException("Заказанные продукты не найдены");
+            }
             order.setPrice(priceService.orderPrice(orderedProducts));
             order.setCreatedDate(order.getCreatedDate());
             Order updatedOrder=orderRepository.save(order);
@@ -160,6 +170,68 @@ public class OrderService {
             orderResponseDelete.setMessage("заказ не удалён. Причина: он находится в стадии "+order.getStage());
             return orderResponseDelete;
         }
+    }
+
+    public OrderResponseDelete deleteOrderForever(UUID orderId){
+        Order order=orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException("Order not found"));
+        List<User> userList=order.getUser();
+        for(int i=0;i<userList.size();i++){
+            User user=userList.get(i);
+            List<Order> userOrders = user.getOrders();
+            List<Order> newUserOrders = new ArrayList<>();
+            for (int k = 0; k < userOrders.size(); k++) {
+                Order currentOrder = userOrders.get(k);
+                if (currentOrder.getId() != order.getId()) {
+                    newUserOrders.add(currentOrder);
+                }
+            }
+            user.setOrders(newUserOrders);
+            userRepository.save(user);
+        }
+            order.setUser(null);
+            List<OrderedProduct> orderedProductList=order.getOrderedProducts();
+            for(int i=0;i<orderedProductList.size();i++){
+                orderedProductRepository.deleteById(orderedProductList.get(i).getId());
+            }
+            order.setOrderedProducts(null);
+            orderRepository.save(order);
+            orderRepository.deleteById(orderId);
+
+            OrderResponseDelete orderResponseDelete = new OrderResponseDelete();
+            orderResponseDelete.setMessage("Заказ навсегда удалён");
+            orderResponseDelete.setHttpStatus(HttpStatus.OK);
+            return orderResponseDelete;
+    }
+
+    public OrderResponseDelete deleteOrderWithoutOrderedProduct(UUID orderId, Principal principal){
+        User user=principalService.getUserByPrincipal(principal);
+        Order order=orderRepository.findByIdAndUser(orderId,user).orElseThrow(()->new OrderNotFoundException("Заказ не найден"));
+        List<OrderedProduct> orderedProducts=orderedProductRepository.findAllByOrder(order).orElse(null);
+        if(orderedProducts.size()==0){
+            List<Order> userOrders=user.getOrders();
+            List<Order> newUserOrders=new ArrayList<>();
+            for(int i=0;i<userOrders.size();i++){
+                Order currentOrder=userOrders.get(i);
+                if(currentOrder.getId()!=order.getId()){
+                    newUserOrders.add(currentOrder);
+                }
+            }
+            user.setOrders(newUserOrders);
+            userRepository.save(user);
+            order.setUser(null);
+            orderRepository.save(order);
+            orderRepository.deleteById(orderId);
+            OrderResponseDelete orderResponseDelete=new OrderResponseDelete();
+            orderResponseDelete.setMessage("Заказ отменён в связи с отсутствием заказанных продуктов");
+            orderResponseDelete.setHttpStatus(HttpStatus.OK);
+            return orderResponseDelete;
+        }else{
+            OrderResponseDelete orderResponseDelete=new OrderResponseDelete();
+            orderResponseDelete.setMessage("Заказ успешно создан "+orderId);
+            orderResponseDelete.setHttpStatus(HttpStatus.OK);
+            return orderResponseDelete;
+        }
+
     }
     public List<Order> getAllOrders(){
         return orderRepository.findAll();

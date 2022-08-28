@@ -5,6 +5,7 @@ import com.example.utro.entity.*;
 import com.example.utro.exceptions.ProductListNotFoundException;
 import com.example.utro.exceptions.ProductNotFoundException;
 import com.example.utro.facade.ProductFacade;
+import com.example.utro.payload.response.MessageResponse;
 import com.example.utro.payload.response.ProductResponseDelete;
 import com.example.utro.payload.response.ProductResponseUpdate;
 import com.example.utro.repository.*;
@@ -184,6 +185,12 @@ public class ProductService {
     }
     public List<Product> getAllProducts(){
         return productRepository.findAll();
+    }
+    public MessageResponse checkInOrder(UUID productId, Principal principal){
+        User user=principalService.getUserByPrincipal(principal);
+        Product product=productRepository.findByArticleAndUser(productId,user).orElseThrow(()->new ProductNotFoundException("Продукт не найден"));
+        boolean isFound=findProductInOrder(product,user.getOrders());
+        return new MessageResponse(isFound+"");
     }
     public Product getProductById(UUID article){
         return productRepository.findById(article).orElseThrow(()->new ProductNotFoundException("Продукт не найден"));

@@ -9,6 +9,7 @@ import com.example.utro.exceptions.ProductNotFoundException;
 import com.example.utro.facade.FurnitureProductFacade;
 import com.example.utro.payload.response.FurnitureProductResponseDelete;
 import com.example.utro.payload.response.FurnitureProductResponseUpdate;
+import com.example.utro.payload.response.ProductResponseDelete;
 import com.example.utro.repository.FurnitureProductRepository;
 import com.example.utro.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,6 +156,46 @@ public class FurnitureProductService {
         List<FurnitureProduct> furnitureProductList=furnitureProductRepository.findAllByProduct(product).orElseThrow(()->new FurnitureProductNotFoundException("Фурнитура продукта не найдена"));
         return furnitureProductList;
     }
+    public FurnitureProductResponseDelete deleteAllFurnitureProductByTemplateProductId(UUID productId){
+        Product product=productRepository.findById(productId).orElseThrow(()->new ProductNotFoundException("Продукт не найден"));
+        if(product.getUser()!=null){
+            FurnitureProductResponseDelete response=new FurnitureProductResponseDelete();
+            response.setHttpStatus(HttpStatus.BAD_REQUEST);
+            response.setMessage("Ошибка! Данный продукт не является шаблонным");
+            return response;
+        }else{
+            List<FurnitureProduct> furnitureProductList=furnitureProductRepository.findAllByProduct(product).orElseThrow(()->new FurnitureProductNotFoundException("Фурнитуры продукта не найдена"));
+            for (int i=0;i<furnitureProductList.size();i++){
+                furnitureProductRepository.deleteById(furnitureProductList.get(i).getId());
+            }
+            FurnitureProductResponseDelete response=new FurnitureProductResponseDelete();
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Фурнитуры продукта успешно удалены");
+            return response;
+        }
+    }
+
+    public FurnitureProductResponseDelete deleteAllFurnitureProductByProductId(UUID productId,Principal principal){
+        User user=principalService.getUserByPrincipal(principal);
+        Product product=productRepository.findByArticleAndUser(productId,user).orElseThrow(()->new ProductNotFoundException("Продукт не найден"));
+        if(user.getOrders()!=null) {
+            boolean isFound = findProductInOrder(product, user.getOrders());
+            if (isFound) {
+                FurnitureProductResponseDelete response=new FurnitureProductResponseDelete();
+                response.setHttpStatus(HttpStatus.BAD_REQUEST);
+                response.setMessage("Ошибка! Данный продукт находиться в списке заказов");
+                return response;
+            }
+        }
+            List<FurnitureProduct> furnitureProductList=furnitureProductRepository.findAllByProductAndUser(product,user).orElseThrow(()->new FurnitureProductNotFoundException("Фурнитуры продукта не найдена"));
+            for (int i=0;i<furnitureProductList.size();i++){
+                furnitureProductRepository.deleteById(furnitureProductList.get(i).getId());
+            }
+            FurnitureProductResponseDelete response=new FurnitureProductResponseDelete();
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Фурнитуры продукта успешно удалены");
+            return response;
+    }
 
         public FurnitureProductResponseUpdate updateTemplateFurnitureProduct(FurnitureProductDTO furnitureProductDTO){
         FurnitureProduct furnitureProduct=furnitureProductRepository.findById(furnitureProductDTO.getId()).orElseThrow(()->new FurnitureProductNotFoundException("Фурнитура продукта не найдена"));
@@ -190,13 +231,16 @@ public class FurnitureProductService {
             }
         }
     private boolean findProductInOrder(Product product, List<Order> orders){
+
         for(int i=0;i<orders.size();i++){
             Order order=orders.get(i);
             List<OrderedProduct> orderedProducts=order.getOrderedProducts();
-            for(int k=0;k<orderedProducts.size();k++){
-                OrderedProduct orderedProduct=orderedProducts.get(i);
-                if(orderedProduct.getProduct().getArticle().equals(product.getArticle())){
-                    return true;
+            if(orderedProducts!=null) {
+                for (int k = 0; k < orderedProducts.size(); k++) {
+                    OrderedProduct orderedProduct = orderedProducts.get(k);
+                    if (orderedProduct.getProduct().getArticle()==product.getArticle()) {
+                        return true;
+                    }
                 }
             }
         }

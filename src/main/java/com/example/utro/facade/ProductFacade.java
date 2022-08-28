@@ -7,6 +7,7 @@ import com.example.utro.repository.FurnitureProductRepository;
 import com.example.utro.repository.ImageRepository;
 import com.example.utro.repository.ProductRepository;
 import com.example.utro.service.ImageUploadService;
+import com.example.utro.service.ProductImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +34,10 @@ public class ProductFacade {
     private ProductRepository productRepository;
     @Autowired
     private ClothProductRepository clothProductRepository;
+
+    @Autowired
+    private ProductImageService productImageService;
+
     public Product productDTOtoProduct(ProductDTO productDTO){
         Product product=new Product();
         product.setArticle(productDTO.getArticle());
@@ -96,6 +101,7 @@ public class ProductFacade {
             }
         }
          imageUploadService.templateProductImage(product.getArticle(),savedTemplateProduct.getArticle());
+         productImageService.templateProductImage(product.getArticle(),savedTemplateProduct.getArticle());
         return templateProduct;
     }
 }

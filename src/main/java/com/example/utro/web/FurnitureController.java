@@ -56,4 +56,10 @@ public class FurnitureController {
         FurnitureDTO furnitureDTO=furnitureFacade.furnitureToFurnitureDTO(furniture);
         return new ResponseEntity<>(furnitureDTO,HttpStatus.OK);
     }
+    @PostMapping("/delete/{furnitureId}")
+    @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
+    public ResponseEntity<Object> deleteFurnitureById(@PathVariable("furnitureId") UUID furnitureId){
+        MessageResponse messageResponse=furnitureService.deleteFurniture(furnitureId);
+        return new ResponseEntity<>(messageResponse,HttpStatus.OK);
+    }
 }
