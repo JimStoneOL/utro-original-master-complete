@@ -27,11 +27,7 @@ public class ProductImageController {
     @PostMapping("/upload/{productId}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> uploadImageProduct(@PathVariable UUID productId, @RequestParam("file") MultipartFile file, Principal principal) throws IOException {
-        try {
             productImageService.uploadImageProduct(file, principal, productId);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity<>(new MessageResponse("Изображение успешно загружено"), HttpStatus.OK);
     }
 
@@ -65,11 +61,7 @@ public class ProductImageController {
     @PostMapping("/delete/{productId}/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> deleteImageProduct(@PathVariable Long id, @PathVariable UUID productId,Principal principal) throws IOException {
-        try {
             productImageService.deleteImageProduct(id, productId, principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity<>(new MessageResponse("Изображение успешно удалено"), HttpStatus.OK);
     }
 

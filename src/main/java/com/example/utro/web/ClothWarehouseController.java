@@ -8,7 +8,6 @@ import com.example.utro.payload.response.ClothWarehouseResponseUpdate;
 import com.example.utro.payload.response.MessageResponse;
 import com.example.utro.service.ClothWarehouseService;
 import com.example.utro.validations.ResponseErrorValidation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api/cloth/warehouse")
 @CrossOrigin
-@Slf4j
 public class ClothWarehouseController {
     @Autowired
     private ResponseErrorValidation responseErrorValidation;
@@ -38,12 +36,7 @@ public class ClothWarehouseController {
     public ResponseEntity<Object> createClothWarehouse(@Valid @RequestBody ClothWarehouseDTO clothWarehouseDTO, BindingResult bindingResult){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        ClothWarehouse clothWarehouse;
-        try {
-            clothWarehouse = clothWarehouseService.createClothWarehouse(clothWarehouseDTO);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothWarehouse clothWarehouse= clothWarehouseService.createClothWarehouse(clothWarehouseDTO);
         ClothWarehouseDTO response=clothWarehouseFacade.clothWarehouseToClothWarehouseDTO(clothWarehouse);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -66,12 +59,7 @@ public class ClothWarehouseController {
     @GetMapping("/get/{id}")
     @PreAuthorize("hasRole('STOREKEEPER') or hasRole('DIRECTOR')")
     public ResponseEntity<Object> getClothWarehouseById(@PathVariable("id") Long id){
-        ClothWarehouse clothWarehouse;
-        try {
-            clothWarehouse = clothWarehouseService.getClothWarehouseById(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothWarehouse clothWarehouse = clothWarehouseService.getClothWarehouseById(id);
         ClothWarehouseDTO clothWarehouseDTO=clothWarehouseFacade.clothWarehouseToClothWarehouseDTO(clothWarehouse);
         return new ResponseEntity<>(clothWarehouseDTO,HttpStatus.OK);
     }
@@ -80,12 +68,7 @@ public class ClothWarehouseController {
     public ResponseEntity<Object> updateClothWarehouse(@Valid @RequestBody ClothWarehouseDTO clothWarehouseDTO,BindingResult bindingResult){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        ClothWarehouseResponseUpdate response;
-        try {
-            response = clothWarehouseService.updateClothWarehouse(clothWarehouseDTO);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothWarehouseResponseUpdate response = clothWarehouseService.updateClothWarehouse(clothWarehouseDTO);
         if(response.getHttpStatus().equals(HttpStatus.BAD_REQUEST)){
             return new ResponseEntity<>(response.getMessage(),response.getHttpStatus());
         }else{
@@ -95,12 +78,7 @@ public class ClothWarehouseController {
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasRole('STOREKEEPER') or hasRole('DIRECTOR')")
     public ResponseEntity<Object> deleteClothWarehouse(@PathVariable("id") Long id){
-        ClothWarehouseResponseDelete response;
-        try {
-            response = clothWarehouseService.deleteClothWarehouse(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothWarehouseResponseDelete response = clothWarehouseService.deleteClothWarehouse(id);
         return new ResponseEntity<>(new MessageResponse(response.getMessage()),response.getHttpStatus());
     }
 }

@@ -31,7 +31,7 @@ public class PriceService {
         Furniture furniture=furnitureProduct.getFurniture();
         Product product=furnitureProduct.getProduct();
         double meter=furniture.getPrice()/(furniture.getWidth()*furniture.getLength());
-        double result=furnitureProduct.getLength()*furnitureProduct.getWidth()*meter;
+        double result=furnitureProduct.getLength()*furnitureProduct.getWidth()*meter*furnitureProduct.getAmount();
         return result;
     }
     public double productPrice(Product product){

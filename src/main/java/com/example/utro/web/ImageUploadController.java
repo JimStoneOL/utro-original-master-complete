@@ -53,6 +53,7 @@ public class ImageUploadController {
         return new ResponseEntity<>(new MessageResponse("Изображение успешно загружено"),HttpStatus.OK);
     }
     @PostMapping("/upload/other/{otherName}")
+    @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> uploadImageToOther(@PathVariable String otherName,@RequestParam("file") MultipartFile file) throws IOException {
         imageUploadService.uploadImageToOther(file,otherName);
         return new ResponseEntity<>(new MessageResponse("Изображение успешно загружено"),HttpStatus.OK);
@@ -83,6 +84,7 @@ public class ImageUploadController {
         return new ResponseEntity<>(imageModel,HttpStatus.OK);
     }
     @GetMapping("/get/user/{userName}")
+    @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> getImageToUser(@PathVariable("userName") Long userName){
         ImageModel imageModel=imageUploadService.getImageToUser(userName);
         return new ResponseEntity<>(imageModel,HttpStatus.OK);

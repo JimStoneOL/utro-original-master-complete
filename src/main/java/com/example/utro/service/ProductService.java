@@ -2,6 +2,7 @@ package com.example.utro.service;
 
 import com.example.utro.dto.ProductDTO;
 import com.example.utro.entity.*;
+import com.example.utro.entity.enums.EStage;
 import com.example.utro.exceptions.ProductListNotFoundException;
 import com.example.utro.exceptions.ProductNotFoundException;
 import com.example.utro.facade.ProductFacade;
@@ -9,7 +10,6 @@ import com.example.utro.payload.response.MessageResponse;
 import com.example.utro.payload.response.ProductResponseDelete;
 import com.example.utro.payload.response.ProductResponseUpdate;
 import com.example.utro.repository.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Slf4j
 public class ProductService {
     private final ProductRepository productRepository;
     private final PrincipalService principalService;
@@ -29,9 +28,10 @@ public class ProductService {
     private final FurnitureProductRepository furnitureProductRepository;
     private final OrderRepository orderRepository;
     private final OrderedProductRepository orderedProductRepository;
+    private final PriceService priceService;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, PrincipalService principalService, ProductFacade productFacade, ClothProductRepository clothProductRepository, FurnitureProductRepository furnitureProductRepository, OrderRepository orderRepository, OrderedProductRepository orderedProductRepository) {
+    public ProductService(ProductRepository productRepository, PrincipalService principalService, ProductFacade productFacade, ClothProductRepository clothProductRepository, FurnitureProductRepository furnitureProductRepository, OrderRepository orderRepository, OrderedProductRepository orderedProductRepository, PriceService priceService) {
         this.productRepository = productRepository;
         this.principalService = principalService;
         this.productFacade = productFacade;
@@ -39,6 +39,7 @@ public class ProductService {
         this.furnitureProductRepository = furnitureProductRepository;
         this.orderRepository = orderRepository;
         this.orderedProductRepository = orderedProductRepository;
+        this.priceService = priceService;
     }
     public Product createProduct(ProductDTO productDTO, Principal principal){
         productDTO.setArticle(UUID.randomUUID());
@@ -100,9 +101,15 @@ public class ProductService {
                 productResponseDelete.setMessage("Ошибка! Данный продукт находиться в списке заказов");
                 return productResponseDelete;
             } else {
+                List<OrderedProduct> orderedProductList=orderedProductRepository.findAllByProduct(product).orElse(null);
+                if(orderedProductList!=null){
+                    for(int i=0;i<orderedProductList.size();i++){
+                        OrderedProduct orderedProduct=orderedProductList.get(i);
+                        orderedProductRepository.deleteById(orderedProduct.getId());
+                    }
+                }
                 List<ClothProduct> clothProductList=clothProductRepository.findAllByProduct(product).orElse(null);
                 if(clothProductList!=null){
-                    log.info(clothProductList.size()+"");
                     for(int i=0;i<clothProductList.size();i++){
                         ClothProduct clothProduct=clothProductList.get(i);
                         clothProductRepository.deleteById(clothProduct.getId());
@@ -124,7 +131,6 @@ public class ProductService {
         }else{
             List<ClothProduct> clothProductList=clothProductRepository.findAllByProduct(product).orElse(null);
             if(clothProductList!=null){
-                log.info(clothProductList.size()+"");
                 for(int i=0;i<clothProductList.size();i++){
                     ClothProduct clothProduct=clothProductList.get(i);
                     clothProductRepository.deleteById(clothProduct.getId());
@@ -204,6 +210,9 @@ public class ProductService {
                     for (int k = 0; k < orderedProducts.size(); k++) {
                         OrderedProduct orderedProduct = orderedProducts.get(k);
                         if (orderedProduct.getProduct().getArticle()==product.getArticle()) {
+                            if(order.getStage().equals(EStage.STAGE_CANCELLED) || order.getStage().equals(EStage.STAGE_COMPLETED)){
+                                return false;
+                            }
                             return true;
                         }
                     }
@@ -258,5 +267,8 @@ public class ProductService {
             return response;
         }
     }
-
+    public double getPriceProduct(UUID productId){
+        Product product=productRepository.findById(productId).orElseThrow(()->new ProductNotFoundException("Продукт не найден"));
+        return priceService.productPrice(product);
+    }
 }

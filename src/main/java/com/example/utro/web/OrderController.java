@@ -43,12 +43,7 @@ public class OrderController {
     @PostMapping("/create")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> createOrder(Principal principal){
-        Order createdOrder;
-        try {
-            createdOrder = orderService.createOrder(principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        Order createdOrder = orderService.createOrder(principal);
         OrderDTO orderDTO=orderFacade.orderToOrderDTO(createdOrder);
         return new ResponseEntity<>(orderDTO, HttpStatus.CREATED);
     }
@@ -79,13 +74,7 @@ public class OrderController {
     @PostMapping("/update/{article}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> updateOrder(@PathVariable("article") UUID article,Principal principal){
-        OrderResponseUpdate response;
-        try{
-            response=orderService.updateOrder(article,principal);
-        }
-        catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        OrderResponseUpdate response=orderService.updateOrder(article,principal);
         if(response.getHttpStatus().equals(HttpStatus.BAD_REQUEST)){
             return new ResponseEntity<>(response.getMessage(),response.getHttpStatus());
         }else{

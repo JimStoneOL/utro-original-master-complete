@@ -20,6 +20,5 @@ public class ProductDTO {
     @NotNull
     @Min(value = 100L, message = "Длина должна быть больше 100 мм")
     private Double length;
-    @Size(max = 100)
     private String comment;
 }

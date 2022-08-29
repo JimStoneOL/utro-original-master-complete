@@ -2,6 +2,7 @@ package com.example.utro.web;
 
 import com.example.utro.payload.request.GiveRoleRequest;
 import com.example.utro.payload.response.GiveRoleResponse;
+import com.example.utro.payload.response.MessageResponse;
 import com.example.utro.service.RoleService;
 import com.example.utro.validations.ResponseErrorValidation;
 import org.springframework.beans.factory.annotation.Autowired;

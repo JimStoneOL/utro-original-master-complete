@@ -39,12 +39,7 @@ public class ClothProductController {
     public ResponseEntity<Object> createClothProduct(@Valid @RequestBody ClothProductDTO clothProductDTO, BindingResult bindingResult, Principal principal){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        ClothProduct clothProduct;
-        try {
-            clothProduct = clothProductService.createClothProduct(clothProductDTO, principal);
-        }catch(Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProduct clothProduct=clothProductService.createClothProduct(clothProductDTO, principal);
         ClothProductDTO response=clothProductFacade.clothProductToClothProductDTO(clothProduct);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -52,24 +47,14 @@ public class ClothProductController {
     @GetMapping("/get/all")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> getAllClothProduct(Principal principal){
-        List<ClothProduct> clothProductList;
-        try {
-            clothProductList = clothProductService.getAllClothProduct(principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        List<ClothProduct> clothProductList=clothProductService.getAllClothProduct(principal);
         List<ClothProductDTO> clothProductDTOList=clothProductFacade.clothProductListToClothProductDTOList(clothProductList);
         return new ResponseEntity<>(clothProductDTOList,HttpStatus.OK);
     }
     @GetMapping("/get/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> getClothProductById(@PathVariable("id") Long id, Principal principal){
-        ClothProduct clothProduct;
-        try {
-            clothProduct = clothProductService.getClothProductById(id, principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProduct clothProduct = clothProductService.getClothProductById(id, principal);
         ClothProductDTO clothProductDTO=clothProductFacade.clothProductToClothProductDTO(clothProduct);
         return new ResponseEntity<>(clothProductDTO,HttpStatus.OK);
     }
@@ -78,12 +63,7 @@ public class ClothProductController {
     public ResponseEntity<Object> updateClothProduct(@Valid @RequestBody ClothProductDTO clothProductDTO,BindingResult bindingResult,Principal principal){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        ClothProductResponseUpdate clothProductResponseUpdate;
-        try {
-            clothProductResponseUpdate = clothProductService.updateClothProduct(clothProductDTO, principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProductResponseUpdate clothProductResponseUpdate = clothProductService.updateClothProduct(clothProductDTO, principal);
         if(clothProductResponseUpdate.getHttpStatus().equals(HttpStatus.BAD_REQUEST)){
             return new ResponseEntity<>(clothProductResponseUpdate.getMessage(),clothProductResponseUpdate.getHttpStatus());
         }else{
@@ -93,12 +73,7 @@ public class ClothProductController {
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> deleteClothProduct(@PathVariable("id") Long id,Principal principal){
-        ClothProductResponseDelete clothProductResponseDelete;
-        try {
-            clothProductResponseDelete = clothProductService.deleteClothProduct(id, principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProductResponseDelete clothProductResponseDelete = clothProductService.deleteClothProduct(id, principal);
         return new ResponseEntity<>(clothProductResponseDelete.getMessage(),clothProductResponseDelete.getHttpStatus());
     }
     @PostMapping("/template/create")
@@ -106,45 +81,25 @@ public class ClothProductController {
     public ResponseEntity<Object> createTemplateClothProduct(@Valid @RequestBody ClothProductDTO clothProductDTO, BindingResult bindingResult){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        ClothProduct clothProduct;
-        try {
-            clothProduct = clothProductService.createTemplateClothProduct(clothProductDTO);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProduct clothProduct = clothProductService.createTemplateClothProduct(clothProductDTO);
         ClothProductDTO responseClothProduct=clothProductFacade.clothProductToClothProductDTO(clothProduct);
         return new ResponseEntity<>(responseClothProduct,HttpStatus.CREATED);
     }
     @GetMapping("/template/get/{id}")
     public ResponseEntity<Object> getTemplateClothProductById(@PathVariable("id") Long id){
-        ClothProduct clothProduct;
-        try{
-            clothProduct=clothProductService.getTemplateClothProductById(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProduct clothProduct=clothProductService.getTemplateClothProductById(id);
         ClothProductDTO clothProductDTO=clothProductFacade.clothProductToClothProductDTO(clothProduct);
         return new ResponseEntity<>(clothProductDTO,HttpStatus.OK);
     }
     @GetMapping("/template/get/product/{id}")
     public ResponseEntity<Object> getTemplateClothProductByProductId(@PathVariable("id") UUID id){
-        List<ClothProduct> clothProductList;
-        try{
-            clothProductList=clothProductService.getTemplateClothProductListByProductId(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        List<ClothProduct> clothProductList=clothProductService.getTemplateClothProductListByProductId(id);
         List<ClothProductDTO> clothProductDTOList=clothProductFacade.clothProductListToClothProductDTOList(clothProductList);
         return new ResponseEntity<>(clothProductDTOList,HttpStatus.OK);
     }
     @GetMapping("/get/product/{id}")
     public ResponseEntity<Object> getClothProductByProductId(@PathVariable("id") UUID id,Principal principal){
-        List<ClothProduct> clothProductList;
-        try{
-            clothProductList=clothProductService.getClothProductListByProductId(id,principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        List<ClothProduct> clothProductList=clothProductService.getClothProductListByProductId(id,principal);
         List<ClothProductDTO> clothProductDTOList=clothProductFacade.clothProductListToClothProductDTOList(clothProductList);
         return new ResponseEntity<>(clothProductDTOList,HttpStatus.OK);
     }
@@ -159,12 +114,7 @@ public class ClothProductController {
     public ResponseEntity<Object> updateTemplateClothProduct(@Valid @RequestBody ClothProductDTO clothProductDTO,BindingResult bindingResult){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        ClothProductResponseUpdate clothProductResponseUpdate;
-        try{
-            clothProductResponseUpdate=clothProductService.updateTemplateClothProduct(clothProductDTO);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProductResponseUpdate clothProductResponseUpdate=clothProductService.updateTemplateClothProduct(clothProductDTO);
         if(clothProductResponseUpdate.getHttpStatus().equals(HttpStatus.BAD_REQUEST)){
             return new ResponseEntity<>(clothProductResponseUpdate.getMessage(),clothProductResponseUpdate.getHttpStatus());
         }else{
@@ -174,45 +124,25 @@ public class ClothProductController {
     @PostMapping("/template/delete/{id}")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> deleteTemplateClothProduct(@PathVariable("id") Long id){
-        ClothProductResponseDelete clothProductResponseDelete;
-        try{
-            clothProductResponseDelete=clothProductService.deleteTemplateClothProduct(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProductResponseDelete clothProductResponseDelete=clothProductService.deleteTemplateClothProduct(id);
         return new ResponseEntity<>(clothProductResponseDelete.getMessage(),clothProductResponseDelete.getHttpStatus());
     }
     @PostMapping("/template/delete/product/{productId}")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> deleteAllClothProductByTemplateProductId(@PathVariable("productId") UUID productId){
-        ClothProductResponseDelete clothProductResponseDelete;
-        try{
-            clothProductResponseDelete=clothProductService.deleteAllClothProductByTemplateProductId(productId);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProductResponseDelete clothProductResponseDelete=clothProductService.deleteAllClothProductByTemplateProductId(productId);
         return new ResponseEntity<>(new MessageResponse(clothProductResponseDelete.getMessage()),clothProductResponseDelete.getHttpStatus());
     }
     @PostMapping("/delete/product/{productId}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> deleteAllClothProductByProductId(@PathVariable("productId") UUID productId,Principal principal){
-        ClothProductResponseDelete clothProductResponseDelete;
-        try{
-            clothProductResponseDelete=clothProductService.deleteAllClothProductByProductId(productId,principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProductResponseDelete clothProductResponseDelete=clothProductService.deleteAllClothProductByProductId(productId,principal);
         return new ResponseEntity<>(new MessageResponse(clothProductResponseDelete.getMessage()),clothProductResponseDelete.getHttpStatus());
     }
     @GetMapping("/get/any/product/{id}")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> getAnyClothProductByProductId(@PathVariable("id") UUID id){
-        List<ClothProduct> clothProductList;
-        try{
-            clothProductList=clothProductService.getAnyClothProductListByProductId(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        List<ClothProduct> clothProductList=clothProductService.getAnyClothProductListByProductId(id);
         List<ClothProductDTO> clothProductDTOList=clothProductFacade.clothProductListToClothProductDTOList(clothProductList);
         return new ResponseEntity<>(clothProductDTOList,HttpStatus.OK);
     }
@@ -226,12 +156,7 @@ public class ClothProductController {
     @GetMapping("/get/any/{id}")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> getAnyClothProductById(@PathVariable("id") Long id){
-        ClothProduct clothProduct;
-        try{
-            clothProduct=clothProductService.getAnyClothProductById(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        ClothProduct clothProduct=clothProductService.getAnyClothProductById(id);
         ClothProductDTO clothProductDTO=clothProductFacade.clothProductToClothProductDTO(clothProduct);
         return new ResponseEntity<>(clothProductDTO,HttpStatus.OK);
     }

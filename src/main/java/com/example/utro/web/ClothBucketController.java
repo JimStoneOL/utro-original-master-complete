@@ -30,23 +30,13 @@ public class ClothBucketController {
 
     @PostMapping("/create/{clothId}")
     public ResponseEntity<Object> createClothBucket(@PathVariable("clothId") UUID clothId, Principal principal){
-        ClothBucket clothBucket;
-        try{
-            clothBucket=clothBucketService.createClothBucket(clothId,principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+        ClothBucket clothBucket=clothBucketService.createClothBucket(clothId,principal);
         return new ResponseEntity<>(clothBucket,HttpStatus.CREATED);
     }
 
     @GetMapping("/get/all")
     public ResponseEntity<Object> getAllClothByUser(Principal principal){
-        List<Cloth> clothList;
-        try{
-            clothList=clothBucketService.getAllClothByUser(principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+        List<Cloth> clothList=clothBucketService.getAllClothByUser(principal);
         List<ClothDTO> clothDTOList=clothFacade.clothListToClothDTOList(clothList);
         return new ResponseEntity<>(clothDTOList,HttpStatus.OK);
     }
@@ -59,32 +49,19 @@ public class ClothBucketController {
         }catch (ClothBucketNotFoundException e){
             return new ResponseEntity<>(new MessageResponse("Ткань не добавлена в корзину"), HttpStatus.OK);
         }
-        catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
         ClothDTO clothDTO=clothFacade.clothToClothDTO(cloth);
         return new ResponseEntity<>(clothDTO,HttpStatus.OK);
     }
 
     @PostMapping("/delete/{clothId}")
     public ResponseEntity<Object> deleteClothBucketByClothId(@PathVariable("clothId") UUID clothId,Principal principal){
-        MessageResponse messageResponse;
-        try{
-            messageResponse=clothBucketService.deleteClothBucket(clothId,principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+        MessageResponse messageResponse=clothBucketService.deleteClothBucket(clothId,principal);
         return new ResponseEntity<>(messageResponse,HttpStatus.OK);
     }
 
     @PostMapping("/delete/all")
     public ResponseEntity<Object> deleteAllClothBucket(Principal principal){
-        MessageResponse messageResponse;
-        try{
-            messageResponse=clothBucketService.deleteAllClothBucket(principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+        MessageResponse messageResponse=clothBucketService.deleteAllClothBucket(principal);
         return new ResponseEntity<>(messageResponse,HttpStatus.OK);
     }
 }

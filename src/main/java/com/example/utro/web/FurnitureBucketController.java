@@ -33,23 +33,13 @@ public class FurnitureBucketController {
 
     @PostMapping("/create/{furnitureId}")
     public ResponseEntity<Object> createFurnitureBucket(@PathVariable("furnitureId") UUID furnitureId, Principal principal){
-        FurnitureBucket furnitureBucket;
-        try{
-            furnitureBucket=furnitureBucketService.createFurnitureBucket(furnitureId,principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+        FurnitureBucket furnitureBucket=furnitureBucketService.createFurnitureBucket(furnitureId,principal);
         return new ResponseEntity<>(furnitureBucket,HttpStatus.CREATED);
     }
 
     @GetMapping("/get/all")
     public ResponseEntity<Object> getAllFurnitureByUser(Principal principal){
-        List<Furniture> furnitureList;
-        try{
-            furnitureList=furnitureBucketService.getAllFurnitureByUser(principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+        List<Furniture> furnitureList=furnitureBucketService.getAllFurnitureByUser(principal);
         List<FurnitureDTO> furnitureDTOList=furnitureFacade.furnitureListToFurnitureDTOList(furnitureList);
         return new ResponseEntity<>(furnitureDTOList,HttpStatus.OK);
     }
@@ -62,32 +52,19 @@ public class FurnitureBucketController {
         }catch (FurnitureBucketNotFoundException e){
             return new ResponseEntity<>(new MessageResponse("Фурнитура не добавлена в корзину"), HttpStatus.OK);
         }
-        catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
         FurnitureDTO furnitureDTO=furnitureFacade.furnitureToFurnitureDTO(furniture);
         return new ResponseEntity<>(furnitureDTO,HttpStatus.OK);
     }
 
     @PostMapping("/delete/{furnitureId}")
     public ResponseEntity<Object> deleteFurnitureBucket(@PathVariable("furnitureId") UUID furnitureId,Principal principal){
-        MessageResponse messageResponse;
-        try{
-            messageResponse=furnitureBucketService.deleteFurnitureBucket(furnitureId,principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+        MessageResponse messageResponse=furnitureBucketService.deleteFurnitureBucket(furnitureId,principal);
         return new ResponseEntity<>(messageResponse,HttpStatus.OK);
     }
 
     @PostMapping("/delete/all")
     public ResponseEntity<Object> deleteAllFurnitureBucket(Principal principal){
-        MessageResponse messageResponse;
-        try{
-            messageResponse=furnitureBucketService.deleteAllFurnitureBucket(principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+        MessageResponse messageResponse=furnitureBucketService.deleteAllFurnitureBucket(principal);
         return new ResponseEntity<>(messageResponse,HttpStatus.OK);
     }
 }

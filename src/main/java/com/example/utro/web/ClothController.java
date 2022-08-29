@@ -6,7 +6,6 @@ import com.example.utro.facade.ClothFacade;
 import com.example.utro.payload.response.MessageResponse;
 import com.example.utro.service.ClothService;
 import com.example.utro.validations.ResponseErrorValidation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,12 +47,7 @@ public class ClothController {
     }
     @GetMapping("/get/{article}")
     public ResponseEntity<Object> getClothById(@PathVariable("article") UUID article){
-        Cloth cloth;
-        try {
-            cloth = clothService.getClothById(article);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        Cloth cloth = clothService.getClothById(article);
         ClothDTO clothDTO=clothFacade.clothToClothDTO(cloth);
         return new ResponseEntity<>(clothDTO,HttpStatus.OK);
     }

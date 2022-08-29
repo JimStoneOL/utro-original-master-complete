@@ -47,12 +47,7 @@ public class FurnitureController {
     }
     @GetMapping("/get/{article}")
     public ResponseEntity<Object> getFurnitureById(@PathVariable("article") UUID article){
-        Furniture furniture;
-        try {
-            furniture = furnitureService.getFurnitureById(article);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        Furniture furniture = furnitureService.getFurnitureById(article);
         FurnitureDTO furnitureDTO=furnitureFacade.furnitureToFurnitureDTO(furniture);
         return new ResponseEntity<>(furnitureDTO,HttpStatus.OK);
     }

@@ -18,6 +18,8 @@ public interface OrderedProductRepository extends JpaRepository<OrderedProduct,L
 
     Optional<List<OrderedProduct>> findAllByOrder(Order order);
 
+    Optional<List<OrderedProduct>> findAllByProduct(Product product);
+
     Optional<List<OrderedProduct>> findAllByOrderAndUser(Order order, User user);
     //Optional<OrderedProduct> findByOrderAndProducts(Order order, List<Product> products);
 }

@@ -13,15 +13,15 @@ import java.util.Set;
 @Data
 @PasswordMatches
 public class SignupRequest {
-	@Email(message = "It should have email format")
-	@NotBlank(message = "User email is required")
+	@Email(message = "Email должен иметь формат почты")
+	@NotBlank(message = "Email не должен быть пустым")
 	@ValidEmail
 	private String email;
-	@NotEmpty(message = "Please enter your name")
+	@NotEmpty(message = "Имя не должно быть пустым")
 	private String firstname;
-	@NotEmpty(message = "Please enter your lastname")
+	@NotEmpty(message = "Фамилия не должна быть пустым")
 	private String lastname;
-	@NotEmpty(message = "Password is required")
+	@NotEmpty(message = "Пароль не должен быть пустым")
 	@Size(min=6)
 	private String password;
 	private String confirmPassword;

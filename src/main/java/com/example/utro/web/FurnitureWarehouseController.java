@@ -37,12 +37,7 @@ public class FurnitureWarehouseController {
     public ResponseEntity<Object> createFurnitureWarehouse(@Valid @RequestBody FurnitureWarehouseDTO furnitureWarehouseDTO, BindingResult bindingResult){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        FurnitureWarehouse furnitureWarehouse;
-        try {
-            furnitureWarehouse = furnitureWarehouseService.createFurnitureWarehouse(furnitureWarehouseDTO);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureWarehouse furnitureWarehouse = furnitureWarehouseService.createFurnitureWarehouse(furnitureWarehouseDTO);
         FurnitureWarehouseDTO response=furnitureWarehouseFacade.furnitureWarehouseToFurnitureWarehouseDTO(furnitureWarehouse);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -65,12 +60,7 @@ public class FurnitureWarehouseController {
     @GetMapping("/get/{id}")
     @PreAuthorize("hasRole('STOREKEEPER') or hasRole('DIRECTOR')")
     public ResponseEntity<Object> getFurnitureWarehouseById(@PathVariable("id") Long id){
-        FurnitureWarehouse furnitureWarehouse;
-        try {
-            furnitureWarehouse = furnitureWarehouseService.getFurnitureWarehouseById(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureWarehouse furnitureWarehouse = furnitureWarehouseService.getFurnitureWarehouseById(id);
         FurnitureWarehouseDTO furnitureWarehouseDTO=furnitureWarehouseFacade.furnitureWarehouseToFurnitureWarehouseDTO(furnitureWarehouse);
         return new ResponseEntity<>(furnitureWarehouseDTO,HttpStatus.OK);
     }
@@ -79,12 +69,7 @@ public class FurnitureWarehouseController {
     public ResponseEntity<Object> updateFurnitureWarehouse(@Valid @RequestBody FurnitureWarehouseDTO furnitureWarehouseDTO,BindingResult bindingResult){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        FurnitureWarehouseResponseUpdate response;
-        try {
-            response = furnitureWarehouseService.updateFurnitureWarehouse(furnitureWarehouseDTO);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureWarehouseResponseUpdate response = furnitureWarehouseService.updateFurnitureWarehouse(furnitureWarehouseDTO);
         if(response.getHttpStatus().equals(HttpStatus.BAD_REQUEST)){
             return new ResponseEntity<>(response.getMessage(),response.getHttpStatus());
         }else{
@@ -94,12 +79,7 @@ public class FurnitureWarehouseController {
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasRole('STOREKEEPER') or hasRole('DIRECTOR')")
     public ResponseEntity<Object> deleteFurnitureWarehouse(@PathVariable("id") Long id){
-        FurnitureWarehouseResponseDelete response;
-        try {
-            response = furnitureWarehouseService.deleteFurnitureWarehouse(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureWarehouseResponseDelete response = furnitureWarehouseService.deleteFurnitureWarehouse(id);
         return new ResponseEntity<>(new MessageResponse(response.getMessage()),response.getHttpStatus());
     }
 }

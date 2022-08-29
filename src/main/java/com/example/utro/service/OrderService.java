@@ -8,18 +8,14 @@ import com.example.utro.exceptions.OrderNotFoundException;
 import com.example.utro.exceptions.OrderedProductNotFoundException;
 import com.example.utro.exceptions.OrdersListNotFoundException;
 import com.example.utro.facade.OrderFacade;
-import com.example.utro.payload.request.CustomerOrderRequest;
 import com.example.utro.payload.request.UpdateStageOrderRequest;
-import com.example.utro.payload.response.MessageResponse;
 import com.example.utro.payload.response.OrderResponseDelete;
 import com.example.utro.payload.response.OrderResponseUpdate;
 import com.example.utro.repository.OrderRepository;
 import com.example.utro.repository.OrderedProductRepository;
 import com.example.utro.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -28,7 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Slf4j
 public class OrderService {
     private final OrderRepository orderRepository;
     private final PrincipalService principalService;

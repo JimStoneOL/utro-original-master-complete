@@ -33,12 +33,7 @@ public class EmailLocalController {
     public ResponseEntity<Object> sendEmailByUser(@Valid @RequestBody EmailDTO emailDTO, BindingResult bindingResult, Principal principal){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        MessageResponse messageResponse;
-        try {
-            messageResponse = emailService.sendEmailByUser(emailDTO, principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        MessageResponse messageResponse = emailService.sendEmailByUser(emailDTO, principal);
         return new ResponseEntity<>(messageResponse, HttpStatus.OK);
     }
     @GetMapping("/get/all")
@@ -48,25 +43,15 @@ public class EmailLocalController {
     }
     @PostMapping("/delete/{id}")
     public ResponseEntity<Object> deleteEmail(@PathVariable("id") Long id, Principal principal){
-        MessageResponse messageResponse;
-        try{
-            messageResponse=emailService.deleteEmailById(id,principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        MessageResponse messageResponse=emailService.deleteEmailById(id,principal);
         return new ResponseEntity<>(messageResponse, HttpStatus.OK);
     }
     @PostMapping("/vip/send")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('DIRECTOR')")
     public ResponseEntity<Object> sendEmailByVIP(@Valid @RequestBody EmailDTO emailDTO, BindingResult bindingResult, Principal principal){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        MessageResponse messageResponse;
-        try{
-            messageResponse=emailService.sendEmailByVIP(emailDTO,principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        MessageResponse messageResponse=emailService.sendEmailByVIP(emailDTO,principal);
         return new ResponseEntity<>(messageResponse, HttpStatus.OK);
     }
 }

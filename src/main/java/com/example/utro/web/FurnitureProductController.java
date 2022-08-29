@@ -47,24 +47,14 @@ public class FurnitureProductController {
     @GetMapping("/get/all")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> getAllFurnitureProduct(Principal principal){
-        List<FurnitureProduct> furnitureProductList;
-        try {
-            furnitureProductList = furnitureProductService.getAllFurnitureProduct(principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        List<FurnitureProduct> furnitureProductList = furnitureProductService.getAllFurnitureProduct(principal);
         List<FurnitureProductDTO> furnitureProductDTOList=furnitureProductFacade.furnitureProductListToFurnitureProductDTOList(furnitureProductList);
         return new ResponseEntity<>(furnitureProductDTOList,HttpStatus.OK);
     }
     @GetMapping("/get/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> getFurnitureProductById(@PathVariable("id") Long id, Principal principal){
-        FurnitureProduct furnitureProduct;
-        try {
-            furnitureProduct = furnitureProductService.getFurnitureProductById(id, principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureProduct furnitureProduct = furnitureProductService.getFurnitureProductById(id, principal);
         FurnitureProductDTO furnitureProductDTO=furnitureProductFacade.furnitureProductToFurnitureProductDTO(furnitureProduct);
         return new ResponseEntity<>(furnitureProductDTO,HttpStatus.OK);
     }
@@ -73,12 +63,7 @@ public class FurnitureProductController {
     public ResponseEntity<Object> updateFurnitureProduct(@Valid @RequestBody FurnitureProductDTO furnitureProductDTO,BindingResult bindingResult, Principal principal){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        FurnitureProductResponseUpdate furnitureProductResponseUpdate;
-        try {
-            furnitureProductResponseUpdate = furnitureProductService.updateFurnitureProduct(furnitureProductDTO, principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureProductResponseUpdate furnitureProductResponseUpdate = furnitureProductService.updateFurnitureProduct(furnitureProductDTO, principal);
         if(furnitureProductResponseUpdate.getHttpStatus().equals(HttpStatus.BAD_REQUEST)){
             return new ResponseEntity<>(furnitureProductResponseUpdate.getMessage(),furnitureProductResponseUpdate.getHttpStatus());
         }else{
@@ -88,12 +73,7 @@ public class FurnitureProductController {
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> deleteFurnitureProduct(@PathVariable("id") Long id,Principal principal){
-        FurnitureProductResponseDelete furnitureProductResponseDelete;
-        try {
-            furnitureProductResponseDelete = furnitureProductService.deleteFurnitureProduct(id, principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureProductResponseDelete furnitureProductResponseDelete=furnitureProductService.deleteFurnitureProduct(id, principal);
         return new ResponseEntity<>(furnitureProductResponseDelete.getMessage(),furnitureProductResponseDelete.getHttpStatus());
     }
     @PostMapping("/template/create")
@@ -101,23 +81,13 @@ public class FurnitureProductController {
     public ResponseEntity<Object> createTemplateFurnitureProduct(@Valid @RequestBody FurnitureProductDTO furnitureProductDTO,BindingResult bindingResult){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        FurnitureProduct furnitureProduct;
-        try{
-            furnitureProduct=furnitureProductService.createTemplateFurnitureProduct(furnitureProductDTO);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureProduct furnitureProduct=furnitureProductService.createTemplateFurnitureProduct(furnitureProductDTO);
         FurnitureProductDTO responseFurnitureProduct=furnitureProductFacade.furnitureProductToFurnitureProductDTO(furnitureProduct);
         return new ResponseEntity<>(responseFurnitureProduct,HttpStatus.CREATED);
     }
     @GetMapping("/template/get/{id}")
     public ResponseEntity<Object> getTemplateFurnitureProductById(@PathVariable("id") Long id){
-        FurnitureProduct furnitureProduct;
-        try{
-            furnitureProduct=furnitureProductService.getTemplateFurnitureProductById(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureProduct furnitureProduct=furnitureProductService.getTemplateFurnitureProductById(id);
         FurnitureProductDTO furnitureProductDTO=furnitureProductFacade.furnitureProductToFurnitureProductDTO(furnitureProduct);
         return new ResponseEntity<>(furnitureProductDTO,HttpStatus.OK);
     }
@@ -129,23 +99,13 @@ public class FurnitureProductController {
     }
     @GetMapping("/template/get/product/{id}")
     public ResponseEntity<Object> getTemplateFurnitureProductByProductId(@PathVariable("id") UUID id){
-        List<FurnitureProduct> furnitureProductList;
-        try{
-            furnitureProductList=furnitureProductService.getTemplateFurnitureProductListByProductId(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        List<FurnitureProduct> furnitureProductList=furnitureProductService.getTemplateFurnitureProductListByProductId(id);
         List<FurnitureProductDTO> furnitureProductDTOList=furnitureProductFacade.furnitureProductListToFurnitureProductDTOList(furnitureProductList);
         return new ResponseEntity<>(furnitureProductDTOList,HttpStatus.OK);
     }
     @GetMapping("/get/product/{id}")
     public ResponseEntity<Object> getFurnitureProductByProductId(@PathVariable("id") UUID id,Principal principal){
-        List<FurnitureProduct> furnitureProductList;
-        try{
-            furnitureProductList=furnitureProductService.getFurnitureProductListByProductId(id,principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        List<FurnitureProduct> furnitureProductList=furnitureProductService.getFurnitureProductListByProductId(id,principal);
         List<FurnitureProductDTO> furnitureProductDTOList=furnitureProductFacade.furnitureProductListToFurnitureProductDTOList(furnitureProductList);
         return new ResponseEntity<>(furnitureProductDTOList,HttpStatus.OK);
     }
@@ -154,12 +114,7 @@ public class FurnitureProductController {
     public ResponseEntity<Object> updateTemplateFurnitureProduct(@Valid @RequestBody FurnitureProductDTO furnitureProductDTO,BindingResult bindingResult){
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        FurnitureProductResponseUpdate furnitureProductResponseUpdate;
-        try{
-            furnitureProductResponseUpdate=furnitureProductService.updateTemplateFurnitureProduct(furnitureProductDTO);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureProductResponseUpdate furnitureProductResponseUpdate=furnitureProductService.updateTemplateFurnitureProduct(furnitureProductDTO);
         if(furnitureProductResponseUpdate.getHttpStatus().equals(HttpStatus.BAD_REQUEST)){
             return new ResponseEntity<>(furnitureProductResponseUpdate.getMessage(),furnitureProductResponseUpdate.getHttpStatus());
         }else{
@@ -169,47 +124,27 @@ public class FurnitureProductController {
     @PostMapping("/template/delete/{id}")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> deleteTemplateFurnitureProduct(@PathVariable("id") Long id){
-        FurnitureProductResponseDelete furnitureProductResponseDelete;
-        try{
-            furnitureProductResponseDelete=furnitureProductService.deleteTemplateFurnitureProduct(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureProductResponseDelete furnitureProductResponseDelete=furnitureProductService.deleteTemplateFurnitureProduct(id);
         return new ResponseEntity<>(furnitureProductResponseDelete.getMessage(),furnitureProductResponseDelete.getHttpStatus());
     }
     @GetMapping("/get/any/product/{id}")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> getAnyFurnitureProductByProductId(@PathVariable("id") UUID id){
-        List<FurnitureProduct> furnitureProductList;
-        try{
-            furnitureProductList=furnitureProductService.getAnyFurnitureProductListByProductId(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        List<FurnitureProduct> furnitureProductList=furnitureProductService.getAnyFurnitureProductListByProductId(id);
         List<FurnitureProductDTO> furnitureProductDTOList=furnitureProductFacade.furnitureProductListToFurnitureProductDTOList(furnitureProductList);
         return new ResponseEntity<>(furnitureProductDTOList,HttpStatus.OK);
     }
     @PostMapping("/template/delete/product/{productId}")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> deleteAllFurnitureProductByTemplateProductId(@PathVariable("productId") UUID productId){
-        FurnitureProductResponseDelete furnitureProductResponseDelete;
-        try{
-            furnitureProductResponseDelete=furnitureProductService.deleteAllFurnitureProductByTemplateProductId(productId);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureProductResponseDelete furnitureProductResponseDelete=furnitureProductService.deleteAllFurnitureProductByTemplateProductId(productId);
         return new ResponseEntity<>(new MessageResponse(furnitureProductResponseDelete.getMessage()),furnitureProductResponseDelete.getHttpStatus());
     }
 
     @PostMapping("/delete/product/{productId}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Object> deleteAllFurnitureProductByProductId(@PathVariable("productId") UUID productId,Principal principal){
-        FurnitureProductResponseDelete furnitureProductResponseDelete;
-        try{
-            furnitureProductResponseDelete=furnitureProductService.deleteAllFurnitureProductByProductId(productId,principal);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureProductResponseDelete furnitureProductResponseDelete=furnitureProductService.deleteAllFurnitureProductByProductId(productId,principal);
         return new ResponseEntity<>(new MessageResponse(furnitureProductResponseDelete.getMessage()),furnitureProductResponseDelete.getHttpStatus());
     }
 
@@ -223,14 +158,8 @@ public class FurnitureProductController {
     @GetMapping("/get/any/{id}")
     @PreAuthorize("hasRole('DIRECTOR') or hasRole('MANAGER')")
     public ResponseEntity<Object> getAnyFurnitureProductById(@PathVariable("id") Long id){
-        FurnitureProduct furnitureProduct;
-        try{
-            furnitureProduct=furnitureProductService.getAnyFurnitureProductById(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        FurnitureProduct furnitureProduct=furnitureProductService.getAnyFurnitureProductById(id);
         FurnitureProductDTO furnitureProductDTO=furnitureProductFacade.furnitureProductToFurnitureProductDTO(furnitureProduct);
         return new ResponseEntity<>(furnitureProductDTO,HttpStatus.OK);
     }
-
 }

@@ -50,5 +50,4 @@ public class UserController {
         List<UserRoleResponse> userRoleResponse=userService.getAllUsers(principal);
         return new ResponseEntity<>(userRoleResponse,HttpStatus.OK);
     }
-
 }

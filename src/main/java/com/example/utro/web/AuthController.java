@@ -14,6 +14,7 @@ import com.example.utro.repository.UserRepository;
 import com.example.utro.service.UserDetailsImpl;
 import com.example.utro.validations.ResponseErrorValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -84,7 +85,7 @@ public class AuthController {
 		if (userRespository.existsByEmail(signupRequest.getEmail())) {
 			return ResponseEntity
 					.badRequest()
-					.body(new MessageResponse("Error: Email is exist"));
+					.body(new MessageResponse("Ошибка! Email уже существует"));
 		}
 		
 		User user = new User(
@@ -95,10 +96,10 @@ public class AuthController {
 		Set<Role> roles = new HashSet<>();
 		Role userRole = roleRepository
 				.findByName(ERole.ROLE_CUSTOMER)
-				.orElseThrow(() -> new RuntimeException("Error, Role USER is not found"));
+				.orElseThrow(() -> new RuntimeException("Ошибка! Пользователь 'Заказчик' не найден"));
 		roles.add(userRole);
 		user.setRoles(roles);
 		userRespository.save(user);
-		return ResponseEntity.ok(new MessageResponse("User CREATED"));
+		return ResponseEntity.ok(new MessageResponse("Регистрация прошла успешно"));
 	}
 }

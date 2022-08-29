@@ -2,6 +2,7 @@ package com.example.utro.service;
 
 
 import com.example.utro.entity.*;
+import com.example.utro.entity.enums.EStage;
 import com.example.utro.exceptions.InOrderException;
 import com.example.utro.exceptions.ProductNotFoundException;
 import com.example.utro.payload.response.MessageResponse;
@@ -158,7 +159,7 @@ public class ProductImageService {
         } catch (IOException e) {
 
         }
-        System.out.println("Compressed Image Byte Size - " + outputStream.toByteArray().length);
+//        System.out.println("Compressed Image Byte Size - " + outputStream.toByteArray().length);
         return outputStream.toByteArray();
     }
 
@@ -188,6 +189,9 @@ public class ProductImageService {
                 for (int k = 0; k < orderedProducts.size(); k++) {
                     OrderedProduct orderedProduct = orderedProducts.get(k);
                     if (orderedProduct.getProduct().getArticle()==product.getArticle()) {
+                        if(order.getStage().equals(EStage.STAGE_CANCELLED) || order.getStage().equals(EStage.STAGE_COMPLETED)){
+                            return false;
+                        }
                         return true;
                     }
                 }

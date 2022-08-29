@@ -1,12 +1,12 @@
 package com.example.utro.web;
 
+import com.example.utro.payload.response.MessageResponse;
 import com.example.utro.service.PDFService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class PDFController {
     @Autowired
     private PDFService pdfService;
 
-    @GetMapping("/generate/remains")
+    @GetMapping("/generate/remains/0a0654b2-5eb7-4b44-8aa8-cc026fa8da0f")
     public void generatePDFAboutRemains(HttpServletResponse response) throws IOException {
         response.setContentType("application/pdf");
         response.setCharacterEncoding("UTF-16LE");
@@ -36,7 +36,7 @@ public class PDFController {
         response.setHeader(headerKey, headerValue);
         this.pdfService.remains(response);
     }
-    @GetMapping("/generate/moves")
+    @GetMapping("/generate/moves/6ac62d91-9045-4e32-ad3f-5cbe1f823ff5")
     public void generatePDFAboutMoves(HttpServletResponse response) throws IOException {
         response.setContentType("application/pdf");
         response.setCharacterEncoding("UTF-16LE");

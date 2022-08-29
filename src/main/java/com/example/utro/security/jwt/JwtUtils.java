@@ -34,9 +34,9 @@ public class JwtUtils {
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt);
 			return true;
 		} catch (MalformedJwtException e) {
-			System.err.println(e.getMessage());
+//			System.err.println(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			System.err.println(e.getMessage());
+//			System.err.println(e.getMessage());
 		}
 
 		return false;

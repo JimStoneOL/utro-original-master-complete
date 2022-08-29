@@ -2,6 +2,7 @@ package com.example.utro.service;
 
 import com.example.utro.dto.ClothProductDTO;
 import com.example.utro.entity.*;
+import com.example.utro.entity.enums.EStage;
 import com.example.utro.exceptions.ClothProductListNotFoundException;
 import com.example.utro.exceptions.ClothProductNotFoundException;
 import com.example.utro.exceptions.ProductNotFoundException;
@@ -242,6 +243,9 @@ public class ClothProductService {
                 for (int k = 0; k < orderedProducts.size(); k++) {
                     OrderedProduct orderedProduct = orderedProducts.get(k);
                     if (orderedProduct.getProduct().getArticle()==product.getArticle()) {
+                        if(order.getStage().equals(EStage.STAGE_CANCELLED) || order.getStage().equals(EStage.STAGE_COMPLETED)){
+                            return false;
+                        }
                         return true;
                     }
                 }
